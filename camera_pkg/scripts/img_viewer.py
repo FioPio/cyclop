@@ -6,7 +6,7 @@ from cv_bridge import CvBridge
 import cv2
 import os
 import numpy as np
-#from time import time as t
+from time import time as t
 
 class Node(object):
     
