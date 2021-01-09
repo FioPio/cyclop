@@ -119,10 +119,11 @@ class PathFinder:
             msg = Points()
             for point in points:
                 p = Point()
-                p.x = point[0]
-                p.y = point[1]
+                p.x = point[1]
+                p.y = point[0]
                 msg.data.append(p)
             self.pub.publish(msg)
+            
 
 if __name__ == '__main__':
     pth = PathFinder()
