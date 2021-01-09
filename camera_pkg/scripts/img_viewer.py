@@ -24,8 +24,8 @@ class Node(object):
 
     def callback(self, msg):
         self.image = self.br.imgmsg_to_cv2(msg)
-        #if t()-self.lastT > 1:
-        #    self.lastT = t()
+        if t()-self.lastT > 1:
+            self.lastT = t()
         cv2.imshow("viewer", self.image)
         if cv2.waitKey(100)==27:
             exit()
