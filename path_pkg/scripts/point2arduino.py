@@ -62,7 +62,7 @@ class Node(object):
             spdF = f  # f* ((np.pi - 4 * abs(theta))/ np.pi)**2
             theta = np.sign(y) * (theta)    # np.sign(y) * a * spdMod
 
-            action = K * theta - D * (theta - self.lE)
+            action = K * theta + D * (theta - self.lE)
             self.lE = theta
             lmspd = spdF - action
             rmspd = spdF + action
