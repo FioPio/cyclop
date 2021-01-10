@@ -15,7 +15,7 @@ R = 50  # dist between wheels in pixels
 
 f = 0 #50  # max forward spd (in counts per .1 sec)
 K = 5  # factor for th-spd
-I = 1.5
+I = 15
 D = 0#25
 
 
