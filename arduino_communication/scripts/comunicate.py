@@ -23,19 +23,20 @@ class ArduinoTalker:
         #if info available
         if self.ser.in_waiting:
             info = self.ser.readline()
-            rospy.loginfo(info)
-            if info[0]=='B':
-                self.pubLvl.publish(info.split(':')[1][:-2])
-            else:
-                self.pubEn.publish(info[:-2])
+            #rospy.loginfo(info)
+            info = info[:-2].split(':')
+            #print(info)
+            if len(info)>2:
+                self.pubLvl.publish(info[2])
+                self.pubEn.publish(info[0]+':'+info[1])
             
 
     def callback(self, data):
-        self.ser.write(data.data+';')    
+        self.ser.write(str(data.data)+';')    
 
 if __name__ == '__main__':
     com = ArduinoTalker()
-    rate = rospy.Rate(100) # 100hz
+    rate = rospy.Rate(50) # 100hz
     while not rospy.is_shutdown():
         com.run()
         rate.sleep()
