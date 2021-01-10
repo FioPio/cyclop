@@ -1,52 +1,22 @@
+#!/usr/bin/env python
+
 import numpy as np
-import cv2
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
-
 import rospy
-from std_msgs.msg import Int16MultiArray
-from std_msgs.msg import Int32
-
-
-newMsg = False
-arr = []
-
-w = 3280
-h = 2464
+from std_msgs.msg import String
+from path_pkg.msg import Point
+from path_pkg.msg import Points
 
 # Parameters
-l = 0 # dist between wheel-axis and camera in pixels
-R = 730 # dist between wheels in pixels
+w = 380  # image width
+h = 266  # image height
 
-f = 300 # max forward spd
-a = 2   # factor for th-spd
+l = 0  # dist between wheel-axis and camera in pixels
+R = 50  # dist between wheels in pixels
 
-def gstreamer_pipeline(
-        capture_width=3280,
-        capture_height=2464,
-        display_width=820,
-        display_height=616,
-        framerate=21,
-        flip_method=0,
-):
-    return (
-            "nvarguscamerasrc ! "
-            "video/x-raw(memory:NVMM), "
-            "width=(int)%d, height=(int)%d, "
-            "format=(string)NV12, framerate=(fraction)%d/1 ! "
-            "nvvidconv flip-method=%d ! "
-            "video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
-            "videoconvert ! "
-            "video/x-raw, format=(string)BGR ! appsink"
-            % (
-                capture_width,
-                capture_height,
-                framerate,
-                flip_method,
-                display_width,
-                display_height,
-            )
-    )
+f = 60 #300  # max forward spd (in counts per .1 sec)
+a = 2  # factor for th-spd
+
+lad = 70 # look ahead distance (in pixels)
 
 
 class Node(object):
@@ -55,55 +25,50 @@ class Node(object):
         nodeName = rospy.get_name()
         rospy.loginfo("%s started" % nodeName)
 
-        self.pubL = rospy.Publisher('inLM', Int32, queue_size=10)
-        self.pubR = rospy.Publisher('inRM', Int32, queue_size=10)
+        self.pub = rospy.Publisher('motor_spds', String, queue_size=10)
 
-        rospy.Subscriber("points", Int16MultiArray, self.callback)
-
-    def start(self):
-        global newMsg, arr
-        i = 0
-        while not rospy.is_shutdown():
-            if newMsg:
-                i = 0
-                self.calc(arr, i)
-                newMsg = False
-            else:
-                i = i + 1
-                self.calc(arr, i)
+        rospy.Subscriber("path_points", Points, self.callback)
 
     def callback(self, msg):
-        global newMsg, arr
-        newMsg = True
-        arr = msg
+        # Should add check for if Points empty - then turn (based on last values?)
 
-    def calc(self, msg, i):
+        # Flip
+        points = msg.data
+        points.reverse()
 
-        # CHECK INPUT
-        point = msg[i]
-        x0 = point[0]
-        y0 = point[1]
+        # Determine goal point
+        goal = []
+        for point in points:
+            x0 = point.x
+            y0 = point.y
 
-        x = x0 - (w / 2)
-        y = h + l + y0
-        d = np.sqrt(x * x + y * y)
+            y = (w / 2) - y0
+            x = h - x0
+            d = np.sqrt(x * x + y * y)
+            if d < lad:
+                goal = (x, y, d)
+            else:
+                break
 
-        theta = np.sign(x) * np.arccos(y/d)
+        x = goal[0]
+        y = goal[1]
+        d = goal[2]
+        # can alternatively be based on curvature = 2 * x / (d * d)
+        theta = np.sign(y) * np.arccos(x / d)
 
-        spdF = f - (f/(w/2)*abs(x))
-        spdA = theta*a
+        spdF = f * ((np.pi - 4 * abs(theta))/ np.pi)**2
+        spdA = theta * a
 
-        lmspd = spdF + spdA
-        rmspd = spdF - spdA
+        lmspd = spdF - spdA
+        rmspd = spdF + spdA
 
-        self.pubL.publish(lmspd)
-        self.pubR.publish(rmspd)
-        # PUBLISH
-
-    #
-    # rospy.spin()
+        # Publish
+        str_out = str(lmspd) + ':' + str(rmspd)
+        self.pub.publish(str_out)
 
 
 if __name__ == '__main__':
     my_node = Node()
-    my_node.start()
+    rate = rospy.Rate(100)
+    while not rospy.is_shutdown():
+        rate.sleep()
