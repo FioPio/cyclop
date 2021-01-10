@@ -25,6 +25,7 @@ lad = 115  # look ahead distance (in pixels)
 class Node(object):
     def __init__(self):
         self.lE = 0
+        self.aE = 0
         rospy.init_node('node')
         rospy.loginfo("point2arduino node started")
 
@@ -63,8 +64,9 @@ class Node(object):
             spdF = f  # f* ((np.pi - 4 * abs(theta))/ np.pi)**2
             theta = np.sign(y) * (theta)    # np.sign(y) * a * spdMod
 
-            action = K * theta - D * (theta - self.lE)
+            action = K * theta - D * (theta - self.lE) + I * self.aE
             self.lE = theta
+            self.aE += theta
             lmspd = spdF - action
             rmspd = spdF + action
 
