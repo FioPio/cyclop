@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
@@ -13,22 +13,22 @@ class Node(object):
     def __init__(self):
         rospy.init_node("img_viewer", anonymous=True)
         # Params
-        self.image = None
         self.br = CvBridge()
+        self.image = None
         self.lastT = t()
 
         # Subscribers
-        rospy.Subscriber("/RGBimage",Image,self.callback)
+        rospy.Subscriber("/modifyed_img",Image,self.callback)
         rospy.spin()
 
 
     def callback(self, msg):
         self.image = self.br.imgmsg_to_cv2(msg)
-        if t()-self.lastT > 1:
+        if t()-self.lastT > 2.0:
             self.lastT = t()
-        cv2.imshow("viewer", self.image)
-        if cv2.waitKey(100)==27:
-            exit()
+            cv2.imshow("viewer", self.image)
+            if cv2.waitKey(50)==27:
+                exit()
 
 
 if __name__ == '__main__':
