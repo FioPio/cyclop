@@ -14,9 +14,9 @@ l = 0  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
 f = 40  # max forward spd (in counts per .1 sec)
-a = 10  # factor for th-spd
+a = 11  # factor for th-spd
 
-lad = 100  # look ahead distance (in pixels)
+lad = 150  # look ahead distance (in pixels)
 
 
 class Node(object):
@@ -56,7 +56,7 @@ class Node(object):
             y = goal[1]
             d = goal[2]
 
-            print("POINT" + str(i))
+            #print("POINT " + str(i))
             # can alternatively be based on curvature = 2 * x / (d * d)
             theta = np.arccos(x / d)
 
