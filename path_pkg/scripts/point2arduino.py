@@ -16,7 +16,7 @@ R = 50  # dist between wheels in pixels
 f = 40 #300  # max forward spd (in counts per .1 sec)
 a = 10  # factor for th-spd
 
-lad = 70 # look ahead distance (in pixels)
+lad = 133 # look ahead distance (in pixels)
 
 
 class Node(object):
