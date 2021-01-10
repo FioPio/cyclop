@@ -50,9 +50,11 @@ def dist( m, n, p):
 
 class PathFinder:
     def __init__(self):
+        self.br = CvBridge()
         self.image = None
         self.br = CvBridge()
         self.pub = rospy.Publisher('path_points', Points)
+        self.pubI = rospy.Publisher('modifyed_img', Image)
         rospy.init_node('path_finding', anonymous=True)
         rospy.loginfo('path_findig node started')
         #subscriber to images
@@ -117,12 +119,17 @@ class PathFinder:
         #points has the variable with the path
         if len(points)>0:
             msg = Points()
+            out = cv2.warpPerspective( img, matrix, finalSize)[290:,150:530]
             for point in points:
+                cv2.circle(out, point, 3, (0, 255, 0), -1 )
                 p = Point()
                 p.x = point[1]
                 p.y = point[0]
                 msg.data.append(p)
+            for i in range(1, len(points)):
+                cv2.line(out, points[i-1], points[i], ( 0, 0 , 255), 2)
             self.pub.publish(msg)
+            self.pubI.publish(self.br.cv2_to_imgmsg(out))
             
 
 if __name__ == '__main__':
