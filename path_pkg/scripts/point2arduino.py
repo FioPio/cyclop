@@ -10,17 +10,20 @@ from path_pkg.msg import Points
 w = 380  # image width
 h = 266  # image height
 
-l = 30  # dist between wheel-axis and camera in pixels
+l = 0  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
 f = 40  # max forward spd (in counts per .1 sec)
-a = 10  # factor for th-spd
+K = 10  # factor for th-spd
+D = 11
+
 
 lad = 115  # look ahead distance (in pixels)
 
 
 class Node(object):
     def __init__(self):
+        self.lE = 0
         rospy.init_node('node')
         rospy.loginfo("point2arduino node started")
 
@@ -56,18 +59,15 @@ class Node(object):
             d = goal[2]
 
             #print("POINT " + str(i))
-            # can alternatively be based on curvature = 2 * x / (d * d)
             theta = np.arccos(x / d)
 
-            #spdMod = (( np.pi- 4 * abs(theta))/np.pi)**2
-            #if spdMod > 1:
-            #    spdMod = 1
-
             spdF = f  # f* ((np.pi - 4 * abs(theta))/ np.pi)**2
-            spdA = np.sign(y) * (theta * a)  # np.sign(y) * a * spdMod
+            theta = np.sign(y) * (theta)    # np.sign(y) * a * spdMod
 
-            lmspd = spdF - spdA
-            rmspd = spdF + spdA
+            action = K * theta + D * (theta - self.lE)
+            self.lE = theta
+            lmspd = spdF - action
+            rmspd = spdF + action
 
             # Publish
             str_out = str(lmspd) + ':' + str(rmspd)
