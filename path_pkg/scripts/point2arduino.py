@@ -10,20 +10,19 @@ from path_pkg.msg import Points
 w = 380  # image width
 h = 266  # image height
 
-l = 0  # dist between wheel-axis and camera in pixels
+l = 30  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
-f = 50  # max forward spd (in counts per .1 sec)
-a = 11  # factor for th-spd
+f = 40  # max forward spd (in counts per .1 sec)
+a = 10  # factor for th-spd
 
-lad = 150  # look ahead distance (in pixels)
+lad = 115  # look ahead distance (in pixels)
 
 
 class Node(object):
     def __init__(self):
         rospy.init_node('node')
-        nodeName = rospy.get_name()
-        rospy.loginfo("%s started" % nodeName)
+        rospy.loginfo("point2arduino node started")
 
         self.pub = rospy.Publisher('motor_spds', String, queue_size=10)
 
@@ -44,7 +43,7 @@ class Node(object):
             y0 = point.y
 
             y = (w / 2) - y0
-            x = h - x0
+            x = h - x0 + l
             d = np.sqrt(x * x + y * y)
             if d < lad:
                 i += 1
