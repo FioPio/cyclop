@@ -14,9 +14,9 @@ l = 0  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
 f = 40  # max forward spd (in counts per .1 sec)
-a = 25  #3.7  # factor for th-spd
+a = 10  # factor for th-spd
 
-lad = 133  # look ahead distance (in pixels)
+lad = 100  # look ahead distance (in pixels)
 
 
 class Node(object):
@@ -60,12 +60,12 @@ class Node(object):
             # can alternatively be based on curvature = 2 * x / (d * d)
             theta = np.arccos(x / d)
 
-            spdMod = (( np.pi- 4 * abs(theta))/np.pi)**2
-            if spdMod > 1:
-                spdMod = 1
+            #spdMod = (( np.pi- 4 * abs(theta))/np.pi)**2
+            #if spdMod > 1:
+            #    spdMod = 1
 
             spdF = f  # f* ((np.pi - 4 * abs(theta))/ np.pi)**2
-            spdA = np.sign(y) * a * spdMod
+            spdA = np.sign(y) * (theta * a)  # np.sign(y) * a * spdMod
 
             lmspd = spdF - spdA
             rmspd = spdF + spdA
