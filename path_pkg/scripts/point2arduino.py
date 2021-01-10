@@ -15,9 +15,9 @@ R = 50  # dist between wheels in pixels
 
 f = 0 #50  # max forward spd (in counts per .1 sec)
 K = 5  # factor for th-spd
-I = 15
+I = 1.5
 D = 0#25
-
+MAXACTION = 25
 
 lad = 115  # look ahead distance (in pixels)
 
@@ -64,9 +64,10 @@ class Node(object):
             spdF = f  # f* ((np.pi - 4 * abs(theta))/ np.pi)**2
             theta = np.sign(y) * (theta)    # np.sign(y) * a * spdMod
 
-            action = K * theta - D * (theta - self.lE) + I * self.aE
+            action = K * theta + D * (theta - self.lE) + I * self.aE
             self.lE = theta
-            self.aE += theta
+            if action < MAXACTION and action > -MAXACTION:
+                self.aE += theta
             lmspd = spdF - action
             rmspd = spdF + action
 
