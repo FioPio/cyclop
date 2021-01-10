@@ -1,0 +1,7 @@
+<launch>
+  <node name="img_publisher" pkg="camera_pkg" type="img_publisher.py" output="screen"/>
+  <node name="comunicate" pkg="arduino_communication" type="comunicate.py" output="screen"/>
+  <node name="path_finding" pkg="path_pkg" type="path_finding.py" output="screen"/>
+  <!--<node name="point2arduino" pkg="path_pkg" type="point2arduino.py" output="screen"/>-->
+  
+</launch>
