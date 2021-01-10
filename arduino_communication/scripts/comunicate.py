@@ -36,7 +36,7 @@ class ArduinoTalker:
 
 if __name__ == '__main__':
     com = ArduinoTalker()
-    rate = rospy.Rate(50) # 100hz
+    rate = rospy.Rate(100) # 100hz
     while not rospy.is_shutdown():
         com.run()
         rate.sleep()
