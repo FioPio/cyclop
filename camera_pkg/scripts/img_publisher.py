@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
@@ -45,13 +45,6 @@ class Node(object):
         # Publisher
         self.pub = rospy.Publisher('RGBimage', Image,queue_size=10)
 
-        # Subscribers
-        #rospy.Subscriber("/camera/image_color",Image,self.callback)
-
-
-    #def callback(self, msg):
-    #    self.image = self.br.imgmsg_to_cv2(msg)
-
     ########################CAMERA CAPTURING####################################
     def start(self):
         rospy.loginfo("RGB image provider started")
@@ -59,8 +52,9 @@ class Node(object):
         br = CvBridge()
         cap = cv2.VideoCapture(gstreamer_pipeline(), cv2.CAP_GSTREAMER)
         if not cap.isOpened():
+            rospy.loginfo('Comunicate node started')
             while True:
-                rospy.loginfo("Camera not available")
+                pass
         while not rospy.is_shutdown():
             #rospy.loginfo('publishing image')
             #br = CvBridge()
@@ -71,6 +65,7 @@ class Node(object):
 
 if __name__ == '__main__':
     rospy.init_node("img_publisher", anonymous=True)
+    rospy.loginfo(' Img_publisher node started')
     my_node = Node()
     my_node.start()
 
