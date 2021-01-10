@@ -13,8 +13,8 @@ h = 266  # image height
 l = 0  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
-f = 60 #300  # max forward spd (in counts per .1 sec)
-a = 2  # factor for th-spd
+f = 50 #300  # max forward spd (in counts per .1 sec)
+a = 10  # factor for th-spd
 
 lad = 70 # look ahead distance (in pixels)
 
@@ -49,22 +49,22 @@ class Node(object):
                 goal = (x, y, d)
             else:
                 break
+        if len(goal)==3:
+            x = goal[0]
+            y = goal[1]
+            d = goal[2]
+            # can alternatively be based on curvature = 2 * x / (d * d)
+            theta = np.sign(y) * np.arccos(x / d)
 
-        x = goal[0]
-        y = goal[1]
-        d = goal[2]
-        # can alternatively be based on curvature = 2 * x / (d * d)
-        theta = np.sign(y) * np.arccos(x / d)
+            spdF = f#f * ((np.pi - 4 * abs(theta))/ np.pi)**2
+            spdA = theta * a
 
-        spdF = f * ((np.pi - 4 * abs(theta))/ np.pi)**2
-        spdA = theta * a
+            lmspd = spdF - spdA
+            rmspd = spdF + spdA
 
-        lmspd = spdF - spdA
-        rmspd = spdF + spdA
-
-        # Publish
-        str_out = str(lmspd) + ':' + str(rmspd)
-        self.pub.publish(str_out)
+            # Publish
+            str_out = str(lmspd) + ':' + str(rmspd)
+            self.pub.publish(str_out)
 
 
 if __name__ == '__main__':
