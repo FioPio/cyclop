@@ -14,7 +14,7 @@ l = 0  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
 f = 40  # max forward spd (in counts per .1 sec)
-a = 2.5  # factor for th-spd
+a = 3.7  # factor for th-spd
 
 lad = 133  # look ahead distance (in pixels)
 
