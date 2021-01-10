@@ -13,8 +13,8 @@ h = 266  # image height
 l = 0  # dist between wheel-axis and camera in pixels
 R = 50  # dist between wheels in pixels
 
-f = 50 #300  # max forward spd (in counts per .1 sec)
-a = 10  # factor for th-spd
+f = 40 #300  # max forward spd (in counts per .1 sec)
+a = 15  # factor for th-spd
 
 lad = 70 # look ahead distance (in pixels)
 
